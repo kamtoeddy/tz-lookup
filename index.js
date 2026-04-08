@@ -13,38 +13,27 @@ let DATA;
 const LEN = 65536 - TIMEZONE_LIST.length;
 
 export async function init() {
-  if (!DATA) {
-    DATA = await promiseDATA;
-  }
+  if (!DATA) DATA = await promiseDATA;
 }
 
 export async function getData() {
-  if (!DATA) {
-    await init();
-  }
-  return {
-    TIMEZONE_LIST,
-    DATA
-  };
+  if (!DATA) await init();
+
+  return { TIMEZONE_LIST, DATA };
 }
 
 export function tz(lat, lon) {
-  if (DATA) {
-    return lookup(lat, lon);
-  }
+  if (DATA) return lookup(lat, lon);
 }
 
 export async function tzAsync(lat, lon) {
-  if (!DATA) {
-    await init();
-  }
+  if (!DATA) await init();
+
   return lookup(lat, lon);
 }
 
 function lookup(lat, lon) {
-  if (!(lat >= -90.0 && lat <= +90.0 && lon >= -180.0 && lon <= +180.0)) {
-    throw new RangeError('invalid coordinates');
-  }
+  if (!(lat >= -90.0 && lat <= +90.0 && lon >= -180.0 && lon <= +180.0)) throw new RangeError('invalid coordinates');
 
   /* The root node of the tree is wider than a normal node, acting essentially
    * as a "flattened" few layers of the tree. This saves a bit of overhead,

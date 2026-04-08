@@ -1,6 +1,6 @@
 {
-  "name": "@pirxpilot/tz-lookup",
-  "version": "9.1.0",
+  "name": "tz-lookup-ts",
+  "version": "0.0.1",
   "description": "fast time zone lookup",
   "keywords": [
     "tz",
@@ -9,7 +9,8 @@
   ],
   "author": "The Dark Sky Company <developer@darksky.net>",
   "contributors": [
-    "Damian Krzeminski <pirxpilot@furkot.com>"
+    "Damian Krzeminski <pirxpilot@furkot.com>",
+    "Eddy Kamto <95vedec59@mozmail.com>"
   ],
   "license": "CC0-1.0",
   "type": "module",
@@ -22,19 +23,27 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pirxpilot/tz-lookup.git"
+    "url": "git+https://github.com/kamtoeddy/tz-lookup-ts.git"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.13",
+    "@biomejs/biome": "2.4.10",
     "assert": "^2.1.0",
-    "esbuild": "^0.27.2"
+    "esbuild": "^0.27.2",
+    "@types/bun": "latest"
   },
   "scripts": {
-    "test": "make check"
+    "clean": "rm -fr build",
+    "lint": "bunx @biomejs/biome check --write --unsafe .",
+    "test": "bun test"
   },
   "files": [
     "index.js",
     "lib",
     "data"
-  ]
+  ],
+  "module": "index.js",
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^6.0.2"
+  }
 }

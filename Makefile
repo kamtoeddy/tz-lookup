@@ -2,10 +2,6 @@ PROJECT=tz-lookup
 NODE_BIN=./node_modules/.bin
 SRC = index.js $(wildcard lib/*.js)
 
-all: check compile
-
-check: lint test
-
 compile: build/build.js
 
 build:
@@ -23,17 +19,3 @@ build/build.js: $(SRC) | build
 		--outfile=$@
 
 .DELETE_ON_ERROR: build/build.js
-
-lint:
-	$(NODE_BIN)/biome ci
-
-format:
-	$(NODE_BIN)/biome check --fix
-
-test:
-	node --test test.js
-
-clean:
-	rm -fr build
-
-.PHONY: clean format lint check all compile test

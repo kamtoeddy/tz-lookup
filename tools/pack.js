@@ -28,6 +28,7 @@ const ALL_HINTS = [
 ];
 
 const root = buildTree(tz_geojson);
+
 Promise.all([
   writeFile('tz_data.json', JSON.stringify(root)),
   writeFile('tz.json', JSON.stringify(timezoneList(root)))
@@ -57,43 +58,41 @@ function buildTree(tz_geojson) {
       root[row * COLS + col] = tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, 1);
     }
   }
+
   return root;
 }
 
 // Generate list of timezones.
 function timezoneList(root) {
   const tz_set = new Set();
+
   add(root);
+
   return Array.from(tz_set).sort();
 
   function add(node) {
-    if (Array.isArray(node)) {
-      node.forEach(add);
-    } else {
-      tz_set.add(node);
-    }
+    if (Array.isArray(node)) node.forEach(add);
+    else tz_set.add(node);
   }
 }
 
 function overlap(features, min_lat, min_lon, max_lat, max_lon) {
   for (const feature of features) {
-    if (!box_overlap(feature, min_lat, min_lon, max_lat, max_lon)) {
-      continue;
-    }
-    if (!feature.geometry) {
-      // HACK: If there's no geometry, we only need to check for box overlap
-      return true;
-    }
-    if (polygon_overlap(feature, min_lat, min_lon, max_lat, max_lon) >= EPS) {
-      return true;
-    }
+    if (!box_overlap(feature, min_lat, min_lon, max_lat, max_lon)) continue;
+
+    // HACK: If there's no geometry, we only need to check for box overlap
+    if (!feature.geometry) return true;
+
+    if (polygon_overlap(feature, min_lat, min_lon, max_lat, max_lon) >= EPS) return true;
   }
 }
 
 function maritime_zone(lon) {
   const x = Math.round(12 - (lon + 180) / 15);
+
   if (x > 0) return 'Etc/GMT+' + x;
   if (x < 0) return 'Etc/GMT' + x;
+
   return 'Etc/GMT';
 }
 
@@ -105,22 +104,17 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
     (function* () {
       for (const candidate of candidates) {
         const overlap = polygon_overlap(candidate, min_lat, min_lon, max_lat, max_lon);
-        if (overlap >= EPS) {
-          yield [candidate, overlap];
-        }
+
+        if (overlap >= EPS) yield [candidate, overlap];
       }
     })()
   );
 
   // No coverage should not happen?
-  if (subset.length === 0) {
-    return etc_tzid;
-  }
+  if (subset.length === 0) return etc_tzid;
 
   // One zone means use it.
-  if (subset.length === 1) {
-    return subset[0][0].properties.tzid;
-  }
+  if (subset.length === 1) return subset[0][0].properties.tzid;
 
   subset.sort(by_coverage_and_tzid);
 
@@ -143,33 +137,23 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
 
       // Xinjiang conflict. We select Asia/Urumqi in order to make it clear
       // that there is, in fact, a conflict.
-      if (a === 'Asia/Shanghai' && b === 'Asia/Urumqi') {
-        return b;
-      }
+      if (a === 'Asia/Shanghai' && b === 'Asia/Urumqi') return b;
 
       // Israeli-Palestinian conflict. We select Asia/Hebron in order to make
       // it clear that there is, in fact, a conflict.
-      if (a === 'Asia/Hebron' && b === 'Asia/Jerusalem') {
-        return a;
-      }
+      if (a === 'Asia/Hebron' && b === 'Asia/Jerusalem') return a;
 
       // Sudan-South Sudan conflict. We select Africa/Khartoum arbitrarily and
       // will tweak it if anyone complains.
-      if (a === 'Africa/Juba' && b === 'Africa/Khartoum') {
-        return b;
-      }
+      if (a === 'Africa/Juba' && b === 'Africa/Khartoum') return b;
 
       // These are just conflicts that occur due to the resolution of our data.
       // Resolve them arbitrarily and we'll tweak it if anyone complains.
-      if (a === 'Europe/Amsterdam' && b === 'Europe/Berlin') {
-        return a;
-      }
-      if (a === 'Australia/Sydney' && b === 'Australia/Melbourne') {
-        return a;
-      }
-      if (a === 'Asia/Tbilisi' && b === 'Europe/Moscow') {
-        return a;
-      }
+      if (a === 'Europe/Amsterdam' && b === 'Europe/Berlin') return a;
+
+      if (a === 'Australia/Sydney' && b === 'Australia/Melbourne') return a;
+
+      if (a === 'Asia/Tbilisi' && b === 'Europe/Moscow') return a;
 
       throw new Error('unresolved zone conflict: ' + a + ' vs ' + b);
     }
@@ -192,20 +176,18 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
   // zone, then collapse them up into a single node.
   if (!children.some(Array.isArray)) {
     const clean_children = children.filter(x => x !== etc_tzid);
-    if (clean_children.length === 0) {
-      return etc_tzid;
-    }
+
+    if (clean_children.length === 0) return etc_tzid;
 
     let all_equal = true;
-    for (let i = 1; i < clean_children.length; i++) {
+
+    for (let i = 1; i < clean_children.length; i++)
       if (clean_children[0] !== clean_children[i]) {
         all_equal = false;
         break;
       }
-    }
-    if (all_equal) {
-      return clean_children[0];
-    }
+
+    if (all_equal) return clean_children[0];
   }
 
   return children;
@@ -213,9 +195,8 @@ function tile(candidates, etc_tzid, min_lat, min_lon, max_lat, max_lon, depth) {
 
 function by_coverage_and_tzid([a, a_coverage], [b, b_coverage]) {
   const order = b_coverage - a_coverage;
-  if (order !== 0) {
-    return order;
-  }
+
+  if (order !== 0) return order;
 
   return a.properties.tzid.localeCompare(b.properties.tzid);
 }
