@@ -42,7 +42,7 @@
     "data"
   ],
   "module": "index.js",
-  "private": true,
+  "private": false,
   "peerDependencies": {
     "typescript": "^6.0.2"
   }
