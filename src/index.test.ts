@@ -1,5 +1,5 @@
 import { beforeEach, describe, it, expect } from "bun:test";
-import { init, tz, tzAsync } from "./index.js";
+import { init, tz, tzAsync } from "../dist";
 
 function test(lat: number, lon: number, tzid: string) {
   const msg = `should return "${tzid}" given ${lat}, ${lon}`;
