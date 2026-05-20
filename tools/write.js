@@ -1,5 +1,5 @@
+import assert from 'node:assert';
 import fs from 'node:fs';
-import assert from 'assert';
 import tz_list from './tz.json' with { type: 'json' };
 import tz_data from './tz_data.json' with { type: 'json' };
 

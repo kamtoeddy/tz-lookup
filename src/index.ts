@@ -1,7 +1,7 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
-import TIMEZONE_LIST from "../data/tz.json" with { type: "json" };
+import TIMEZONE_LIST from '../data/tz.json' with { type: 'json' };
 
 const COARSE_WIDTH = 48;
 const COARSE_HEIGHT = 24;
@@ -14,7 +14,7 @@ let DATA: Uint16Array<ArrayBuffer>;
 
 const LEN = 65_536 - TIMEZONE_LIST.length;
 
-export { init, getData, tz, tzAsync };
+export { getData, init, tz, tzAsync };
 
 async function init() {
   if (!DATA) DATA = await promiseDATA;
@@ -27,18 +27,18 @@ async function getData() {
 }
 
 function tz(lat: number, lon: number) {
-  if (DATA) return lookup(lat, lon);
+  return DATA ? lookup(lat, lon) : ({ data: null, error: 'timezone data unavailable' } as const);
 }
 
 async function tzAsync(lat: number, lon: number) {
   if (!DATA) await init();
 
-  return lookup(lat, lon);
+  return tz(lat, lon);
 }
 
 function lookup(lat: number, lon: number) {
   if (!(lat >= -90.0 && lat <= +90.0 && lon >= -180.0 && lon <= +180.0))
-    throw new RangeError("invalid coordinates");
+    return { data: null, error: 'invalid coordinates' } as const;
 
   /* The root node of the tree is wider than a normal node, acting essentially
    * as a "flattened" few layers of the tree. This saves a bit of overhead,
@@ -62,18 +62,19 @@ function lookup(lat: number, lon: number) {
   }
 
   /* Once we hit a leaf, return the relevant timezone. */
-  return TIMEZONE_LIST[i - LEN];
+  const data = TIMEZONE_LIST[i - LEN] ?? null;
+
+  return data ? ({ data, error: null } as const) : ({ data: null, error: 'timezone not found' } as const);
 }
 
 async function loadData() {
-  const filename = path.resolve(import.meta.dirname, "./data/tz.bin");
+  const filename = path.resolve(import.meta.dirname, './data/tz.bin');
 
   return fromBuffer(await fs.readFile(filename));
 }
 
 function fromBuffer(buffer: Buffer<ArrayBuffer>) {
   const len = buffer.length;
-  // const ab = new ArrayBuffer(len);
   const uints = new Uint16Array(new ArrayBuffer(len));
   let u = 0;
 
