@@ -48,13 +48,14 @@
         "noUndeclaredDependencies": "error",
         "noUndeclaredVariables": "error",
         "noUnusedVariables": "error",
-        "useImportExtensions": "error",
+        "useImportExtensions": "off",
         "useJsonImportAttributes": "error"
       },
       "complexity": {
         "noForEach": "off"
       },
       "style": {
+        "noNonNullAssertion": "off",
         "noUnusedTemplateLiteral": "error",
         "noUselessElse": "error",
         "useDefaultParameterLast": "error",
@@ -69,27 +70,5 @@
         "noAssignInExpressions": "off"
       }
     }
-  },
-  "overrides": [
-    {
-      "includes": [
-        "test.html"
-      ],
-      "javascript": {
-        "globals": [
-          "mocha",
-          "before",
-          "it",
-          "describe"
-        ]
-      },
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noUnusedVariables": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

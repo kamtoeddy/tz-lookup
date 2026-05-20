@@ -64,7 +64,10 @@ const HINTS = [
   [49.129274, 22.744102], // Muczne, PL
   [47.112963, -56.38469], // Miquelon Island
   [46.763056, -56.174167], // Saint-Pierre Pointe-Blanche Airport
-  [51.443014, -57.185941] // Blanc Sablon
+  [51.443014, -57.185941], // Blanc Sablon
+  [44.878319, -117.110738], // Halfway, OR
+  [44.026543, -116.963558], // Ontario, OR
+  [42.412454, -117.863] // Basque, OR
 ];
 
 export function getHints() {

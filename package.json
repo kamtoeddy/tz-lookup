@@ -1,6 +1,7 @@
 {
-  "name": "@pirxpilot/tz-lookup",
-  "version": "9.0.1",
+  "name": "tz-lookup-ts",
+  "version": "0.0.2",
+  "private": false,
   "description": "fast time zone lookup",
   "keywords": [
     "tz",
@@ -9,32 +10,33 @@
   ],
   "author": "The Dark Sky Company <developer@darksky.net>",
   "contributors": [
-    "Damian Krzeminski <pirxpilot@furkot.com>"
+    "Damian Krzeminski <pirxpilot@furkot.com>",
+    "Eddy Kamto <95vedec59@mozmail.com>"
   ],
   "license": "CC0-1.0",
-  "type": "module",
-  "exports": "./index.js",
-  "imports": {
-    "#load-data": {
-      "node": "./lib/load-data.js",
-      "default": "./lib/browser-load-data.js"
-    }
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pirxpilot/tz-lookup.git"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.3.13",
-    "assert": "^2.1.0",
-    "esbuild": "^0.27.2"
+    "url": "git+https://github.com/kamtoeddy/tz-lookup-ts.git"
   },
   "scripts": {
-    "test": "make check"
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
+    "clean": "rm -fr dist",
+    "lint": "bunx @biomejs/biome check --write --unsafe .",
+    "lint:migrate": "clear; bunx @biomejs/biome migrate --write",
+    "test": "bun run build && bun test"
   },
+  "type": "module",
+  "module": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
-    "index.js",
-    "lib",
-    "data"
-  ]
+    "dist"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "2.4.15",
+    "@types/bun": "^1.3.13",
+    "tsdown": "^0.22.0",
+    "typescript": "^6.0.3"
+  }
 }

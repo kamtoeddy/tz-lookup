@@ -5,7 +5,7 @@ check:
 
 # get data
 
-VERSION ?= 2025c
+VERSION ?= 2026a
 CULTURAL_URL = https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural
 CURL = curl --no-progress-meter --location
 

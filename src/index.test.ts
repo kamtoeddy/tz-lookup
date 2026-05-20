@@ -1,28 +1,24 @@
-import assert from 'node:assert';
-import { before, describe, it } from 'node:test';
-import { init, tz, tzAsync } from './index.js';
+import { beforeEach, describe, expect, it } from 'bun:test';
+import { init, tz, tzAsync } from '../dist';
 
-function test(lat, lon, tzid) {
+function test(lat: number, lon: number, tzid: string) {
   const msg = `should return "${tzid}" given ${lat}, ${lon}`;
-  it(msg, () => assert.equal(tz(lat, lon), tzid));
+  it(msg, () => expect(tz(lat, lon).data).toEqual(tzid));
 }
 
-async function testAsync(lat, lon, tzid) {
+async function testAsync(lat: number, lon: number, tzid: string) {
   const msg = `should return "${tzid}" given ${lat}, ${lon}`;
-  it(msg, async () => assert.equal(await tzAsync(lat, lon), tzid));
+  it(msg, async () => expect((await tzAsync(lat, lon)).data).toEqual(tzid));
 }
 
-function errorTest(lat, lon) {
-  const msg = `should throw an error given ${lat}, ${lon}`;
-  const exception = {
-    name: 'RangeError',
-    message: 'invalid coordinates'
-  };
-  it(msg, () => assert.throws(() => tz(lat, lon), exception));
+function errorTest(lat: number, lon: number) {
+  const invalidCoordinatesError = 'invalid coordinates';
+
+  it(`should throw an error given ${lat}, ${lon}`, () => expect(tz(lat, lon).error).toEqual(invalidCoordinatesError));
 }
 
 describe('tz-lookup', () => {
-  before(() => init());
+  beforeEach(() => init());
 
   /* These tests are hand-crafted for specific locations. */
   test(40.7092, -74.0151, 'America/New_York');
@@ -172,9 +168,13 @@ describe('tz-lookup', () => {
   /* Bizarre inputs should not. */
   errorTest(100, 10);
   errorTest(10, 190);
+  // @ts-expect-error lol
   errorTest('hello', 10);
+  // @ts-expect-error lol
   errorTest(10, 'hello');
+  // @ts-expect-error lol
   errorTest(undefined, undefined);
+  // @ts-expect-error lol
   errorTest({ lat: 10, lon: 10 });
 
   /* These are automatically-generated test-cases just so I can be confident
